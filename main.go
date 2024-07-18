@@ -23,7 +23,8 @@ type ViaCEP struct {
 }
 
 func main() {
-	for _, url := range os.Args[1:] {
+	for _, cep := range os.Args[1:] {
+		url := "http://viacep.com.br/ws/" + cep + "/json"
 		req, err := http.Get(url)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "erro ao fazer a requisição: %v \n", err)
