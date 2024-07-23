@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-type ViaCEP struct {
+type InfoCEP struct {
 	Cep         string `json:"cep"`
 	Logradouro  string `json:"logradouro"`
 	Complemento string `json:"complemento"`
@@ -23,24 +23,21 @@ type ViaCEP struct {
 }
 
 func main() {
-	for _, cep := range os.Args[1:] {
-		url := "http://viacep.com.br/ws/" + cep + "/json"
-		req, err := http.Get(url)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "erro ao fazer a requisição: %v \n", err)
-		}
-		defer req.Body.Close()
+	cep := os.Args[1]
 
-		res, err := io.ReadAll(req.Body)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "erro ao ler a resposta: %v \n", err)
-		}
-
-		var data ViaCEP
-		err = json.Unmarshal(res, &data)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "erro ao fazer o parse da requisição: %v \n", err)
-		}
-		fmt.Println(data)
+	url := "https://viacep.com.br/ws/" + cep + "/json/"
+	req, err := http.Get(url)
+	if err != nil {
+		fmt.Println(err.Error())
 	}
+
+	res, err := io.ReadAll(req.Body)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	var data InfoCEP
+	json.Unmarshal(res, &data)
+	fmt.Println(data)
+
 }
