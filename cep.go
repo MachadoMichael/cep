@@ -1,11 +1,9 @@
-package main
+package cep
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
-	"os"
 )
 
 type InfoCEP struct {
@@ -22,22 +20,27 @@ type InfoCEP struct {
 	Siafi       string `json:"siafi"`
 }
 
-func main() {
-	cep := os.Args[1]
+func GetInfo(cep string) (InfoCEP, error) {
 
 	url := "https://viacep.com.br/ws/" + cep + "/json/"
 	req, err := http.Get(url)
 	if err != nil {
-		fmt.Println(err.Error())
+		return InfoCEP{}, err
 	}
+
+	defer req.Body.Close()
 
 	res, err := io.ReadAll(req.Body)
 	if err != nil {
-		fmt.Println(err.Error())
+		return InfoCEP{}, err
 	}
 
 	var data InfoCEP
-	json.Unmarshal(res, &data)
-	fmt.Println(data)
+	err = json.Unmarshal(res, &data)
+	if err != nil {
+		return InfoCEP{}, err
+	}
+
+	return data, nil
 
 }
